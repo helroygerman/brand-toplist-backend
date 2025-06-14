@@ -1,12 +1,11 @@
 # Brand Toplist Backend
 
-This project provides a comprehensive backend API for the Brand Toplist application - a CRUD application to manage a top list of brands with mobile-friendly design and geolocation-based list configuration.
+This project provides a comprehensive backend API for the Brand Toplist application - a CRUD application to manage a top list of brands  and geolocation-based list configuration.
 
 ## Features
 
 - **Complete CRUD Operations** - Create, read, update, and delete brand records
 - **Geolocation Support** - Location-based brand list configuration
-- **Mobile-Responsive Design** - Optimized for mobile devices
 - **RESTful API** - Clean and intuitive API endpoints
 - **Interactive API Documentation** - Swagger/OpenAPI documentation available at `/api/documentation`
 - **Docker Support** - Easy deployment with Docker containerization
@@ -63,11 +62,11 @@ docker run --env-file .env -d -p 8000:80 --name brand-toplist-backend brand-topl
 
 The application provides the following main endpoints:
 
-- `GET /api/brands` - Retrieve all brands
-- `POST /api/brands` - Create a new brand
-- `GET /api/brands/{id}` - Retrieve a specific brand
-- `PUT /api/brands/{id}` - Update a specific brand
-- `DELETE /api/brands/{id}` - Delete a specific brand
+- `GET /api/v1/brands` - Retrieve all brands
+- `POST /api/v1/brands` - Create a new brand
+- `GET /api/v1/brands/{id}` - Retrieve a specific brand
+- `PUT /api/v1/brands/{id}` - Update a specific brand
+- `DELETE /api/v1/brands/{id}` - Delete a specific brand
 
 For complete endpoint documentation with parameters, request/response formats, and examples, visit the Swagger documentation at `/api/documentation`.
 
@@ -136,17 +135,10 @@ brand-toplist-backend/
 ├── storage/
 ├── public/
 ├── Dockerfile
-├── docker-compose.yml (optional)
 └── README.md
 ```
 
-## Testing
 
-Run the test suite with:
-
-```bash
-php artisan test
-```
 
 ## Contributing
 
