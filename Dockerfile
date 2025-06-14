@@ -1,43 +1,58 @@
-# Utiliser l'image PHP 8.2 avec Apache intégré
+# Base image: Official PHP image with Apache
 FROM php:8.2-apache
 
-# Installer les dépendances système et extensions PHP nécessaires
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
     git \
     curl \
-    libzip-dev \
-    sqlite3 \
-    libsqlite3-dev \
-    && docker-php-ext-configure gd --with-jpeg \
-    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring zip exif pcntl gd \
-    && a2enmod rewrite
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    zip \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Installer Composer globalement
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Définir le dossier de travail
+# Enable Apache rewrite module
+RUN a2enmod rewrite
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy application code
+COPY . /var/www/html
+
+# Set working directory
 WORKDIR /var/www/html
 
-# Copier les fichiers de l'application dans le conteneur
-COPY . .
+# Install Composer dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Donner les permissions nécessaires
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache \
-    && chmod 777 /var/www/html/database/database.sqlite
+# Copy database configuration
+COPY .env /var/www/html/.env
 
-# Installer les dépendances PHP via Composer
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+# Generate Laravel application key
+RUN php artisan key:generate
 
-# Exposer le port 80 d'Apache
+# Set proper permissions for Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 777 storage bootstrap/cache
+RUN chmod -R 777 database
+# Configure Apache DocumentRoot to point to Laravel's public directory
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+# Add Apache configuration for Laravel
+RUN echo '<Directory /var/www/html/public>\n\
+    Options Indexes FollowSymLinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>' >> /etc/apache2/sites-available/000-default.conf
+
+# Expose Apache port
 EXPOSE 80
 
-# Lancer Apache en mode foreground (obligatoire dans Docker)
+# Start Apache server
 CMD ["apache2-foreground"]

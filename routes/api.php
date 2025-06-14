@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Author: German SONKOUE
+ * Version: 1.0.0
+ * Date: 2025-06-14
+ * Description: This file defines the API routes for the Brand Toplist application.
+ */
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ToplistController;
 use App\Http\Controllers\Api\BrandController;
