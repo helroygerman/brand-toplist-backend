@@ -12,7 +12,7 @@ This project provides the backend for the Brand Toplist application.
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/brand-toplist-backend.git
+    git clone https://github.com/helroygerman/brand-toplist-backend.git
     cd brand-toplist-backend
     ```
 
@@ -35,6 +35,15 @@ If your application requires environment variables, create a `.env` file in the 
 ```bash
 docker run --env-file .env -d -p 8000:8000 brand-toplist-backend
 ```
+
+## Screenshots
+
+
+
+![Screenshot 1](screenshots/screenshot1.png)
+![Screenshot 2](screenshots/screenshot2.png)
+
+## Folder Structure
 
 ### Stopping the Container
 

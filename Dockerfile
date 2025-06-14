@@ -1,39 +1,43 @@
-# Use official PHP image with required extensions
-FROM php:8.2-fpm
+# Utiliser l'image PHP 8.2 avec Apache intégré
+FROM php:8.2-apache
 
-# Set working directory
-WORKDIR /var/www
-
-# Install system dependencies
+# Installer les dépendances système et extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
-    build-essential \
     libpng-dev \
     libjpeg-dev \
     libonig-dev \
     libxml2-dev \
     zip \
     unzip \
-    curl \
     git \
-    nano \
+    curl \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring zip exif pcntl
+    sqlite3 \
+    libsqlite3-dev \
+    && docker-php-ext-configure gd --with-jpeg \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring zip exif pcntl gd \
+    && a2enmod rewrite
 
-# Install Composer
+# Installer Composer globalement
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy application source
+# Définir le dossier de travail
+WORKDIR /var/www/html
+
+# Copier les fichiers de l'application dans le conteneur
 COPY . .
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 755 /var/www
+# Donner les permissions nécessaires
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache \
+    && chmod 777 /var/www/html/database/database.sqlite
 
-# Install PHP dependencies
+# Installer les dépendances PHP via Composer
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Expose port
-EXPOSE 8000
+# Exposer le port 80 d'Apache
+EXPOSE 80
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Lancer Apache en mode foreground (obligatoire dans Docker)
+CMD ["apache2-foreground"]
