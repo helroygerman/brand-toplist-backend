@@ -79,7 +79,7 @@ class BrandController extends Controller
         $request->validate([
             'brand_name' => 'required|string|max:255',
             'brand_image' => 'required|url',
-            'rating' => 'required|integer|min:0|max:5',
+            'rating' => 'required|numeric|min:0|max:5',
         ]);
 
         // Create a new brand using the validated data
@@ -181,7 +181,7 @@ class BrandController extends Controller
         $request->validate([
             'brand_name' => 'sometimes|required|string|max:255',
             'brand_image' => 'sometimes|required|url',
-            'rating' => 'sometimes|required|integer|min:0|max:5',
+            'rating' => 'sometimes|required|numeric|min:0|max:5',
         ]);
         $brand = Brand::where('brand_id', $brand_id)->firstOrFail();
         $brand->update($request->only(['brand_name', 'brand_image', 'rating']));

@@ -9,4 +9,13 @@ class Brand extends Model
     //
     protected $primaryKey = 'brand_id';
     protected $fillable = ['brand_name', 'brand_image', 'rating'];
+
+    /**
+     * Get the toplists associated with the brand.
+     */
+    public function toplists()
+{
+    return $this->hasMany(Toplist::class);
+}
+
 }

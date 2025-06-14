@@ -12,13 +12,14 @@ class Toplist extends Model
     protected $casts = [
         'brand_ids' => 'array', 
     ];
-
     /**
      * Get the brands associated with the toplist.
      */
-    public function brands()
+     public function brands()
     {
-        return $this->belongsToMany(Brand::class, 'toplist_brand', 'toplist_id', 'brand_id')
-                    ->withTimestamps();
+        return Brand::whereIn('brand_id', $this->brand_ids)->get();
     }
+
+    
+   
 }
