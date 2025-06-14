@@ -31,8 +31,9 @@ WORKDIR /var/www/html
 # Install Composer dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy database configuration
-COPY .env /var/www/html/.env
+
+# Copy environment file
+COPY .env.example /var/www/html/.env
 
 # Generate Laravel application key
 RUN php artisan key:generate
