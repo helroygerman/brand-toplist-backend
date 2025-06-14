@@ -12,10 +12,9 @@ use Illuminate\Support\Facades\Log;
 
 class ToplistController extends Controller
 {
-    //
     public function index(Request $request)
     {
-        $this->generateDefaultToplist();
+       // $this->generateDefaultToplist();
        $country = $request->header('CF-IPCountry') ?? 'XX';
 
     $toplist = Toplist::where('country_code', $country)->first();
@@ -33,30 +32,6 @@ class ToplistController extends Controller
     ]);
     }
 
-      /**
-     * Get user's country from Cloudflare header or fallback methods
-     */
-    private function getUserCountry(Request $request): ?string
-    {
-       
-        $cfCountry = $request->header('CF-IPCountry');
-        if ($cfCountry && $this->isValidCountryCode($cfCountry)) {
-            return strtoupper($cfCountry);
-        }
-
-       
-        $testCountry = $request->header('X-Test-Country');
-        if ($testCountry && $this->isValidCountryCode($testCountry)) {
-            Log::info('Using test country header', ['country' => $testCountry]);
-            return strtoupper($testCountry);
-        }
-
-        if (app()->environment('local')) {
-            return $this->getCountryByIP($request->ip());
-        }
-
-        return null;
-    }
     /**
      * Validate ISO-2 country code format
      */
@@ -70,20 +45,12 @@ class ToplistController extends Controller
     }
 
     /**
-     * Simulate country detection based on IP for local development
-     * In production, you would use a proper geolocation service
+     * Generate a default toplist if it doesn't exist
+     * This method is called to ensure that there is always a toplist available
+     * for the default country code 'XX'.
+     *
+     * @return Toplist|null
      */
-    private function getCountryByIP(string $ip): ?string
-    {
-        // For local development, simulate different countries based on last IP octet
-        if ($ip === '127.0.0.1' || str_starts_with($ip, '192.168.') || str_starts_with($ip, '10.')) {
-            // Simulate different countries for local testing
-            $testCountries = ['US', 'GB', 'DE', 'FR', 'JP', 'CA'];
-            return $testCountries[array_rand($testCountries)];
-        }
-
-        return null;
-    }
 
     public static function generateDefaultToplist()
     {
